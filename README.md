@@ -14,31 +14,31 @@ Web Audio Sequencer is a library for writing music on the web in a declarative s
 Create an object that describes your music:
 
 ```
-    const state: AudioState = {
-      bpm: 120,
-      bars: 1,
-      sequences: [
-        {
-          synth: {
-            shape: "sawtooth",
-            filter: { q: 2, frequency: 10000 },
-            envelope: { attack: 0.03, sustain: 0.1, release: 0.1 },
-            id: 0,
-          },
-          notes: [130, 196, 174, 155, 196, 233, 196, 261],
-        },
-        {
-          synth: {
-            shape: "square",
-            filter: { q: 2, frequency: 10000 },
-            envelope: { attack: 0, sustain: 0.1, release: 0.1 },
-            id: 0,
-          },
-          notes: [130, 233],
-        },
-      ],
-      loop: true,
-    };
+const state: AudioState = {
+  bpm: 120,
+  bars: 1,
+  sequences: [
+    {
+      synth: {
+        shape: "sawtooth",
+        filter: { q: 2, frequency: 10000 },
+        envelope: { attack: 0.03, sustain: 0.1, release: 0.1 },
+        id: 0,
+      },
+      notes: [130, 196, 174, 155, 196, 233, 196, 261],
+    },
+    {
+      synth: {
+        shape: "square",
+        filter: { q: 2, frequency: 10000 },
+        envelope: { attack: 0, sustain: 0.1, release: 0.1 },
+        id: 0,
+      },
+      notes: [130, 233],
+    },
+  ],
+  loop: true,
+};
 ```
 
 Then create a sequence from your object:
