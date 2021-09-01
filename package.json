@@ -1,0 +1,14 @@
+{
+  "name": "declarative-web-audio",
+  "version": "1.0.0",
+  "description": "A declarative way to work with the Web Audio API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Peter Dingilian",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.4.2"
+  }
+}
