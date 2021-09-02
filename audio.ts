@@ -1,3 +1,5 @@
+import { Shape } from "./types";
+
 const AudioCtx = (audioCtx: OfflineAudioContext) => ({
   now: () => audioCtx.currentTime,
   out: audioCtx.destination,

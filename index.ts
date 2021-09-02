@@ -1,5 +1,11 @@
 import { AudioCtx, Audio } from "./audio";
-import { Synth, LowLevelSynth, AudioState, SequenceOscillator } from "./types";
+import {
+  Synth,
+  LowLevelSynth,
+  AudioState,
+  SequenceOscillator,
+  Sequence,
+} from "./types";
 
 const createLowLevelSynth = (synth: Synth, audio: Audio): LowLevelSynth => {
   const oscillator = audio.createOscillator(synth.shape);
@@ -8,6 +14,48 @@ const createLowLevelSynth = (synth: Synth, audio: Audio): LowLevelSynth => {
   oscillator.connect(filter).connect(amp).connect(audio.out);
   oscillator.start();
   return { oscillator, filter, amp };
+};
+
+const getOscillatorScheduler = (
+  note: number,
+  lowLevelSynth: LowLevelSynth,
+  sequence: Sequence
+) => {
+  return (when: number) => {
+    lowLevelSynth.oscillator.frequency.setValueAtTime(note, when);
+    lowLevelSynth.filter.frequency.setValueAtTime(0, when);
+    lowLevelSynth.amp.gain.setValueAtTime(0, when);
+    lowLevelSynth.filter.frequency.linearRampToValueAtTime(
+      sequence.synth.filter.frequency,
+      when + sequence.synth.envelope.attack
+    );
+    lowLevelSynth.amp.gain.linearRampToValueAtTime(
+      0.3,
+      when + sequence.synth.envelope.attack
+    );
+    lowLevelSynth.filter.frequency.setValueAtTime(
+      sequence.synth.filter.frequency,
+      when + sequence.synth.envelope.attack + sequence.synth.envelope.sustain
+    );
+    lowLevelSynth.amp.gain.setValueAtTime(
+      0.3,
+      when + sequence.synth.envelope.attack + sequence.synth.envelope.sustain
+    );
+    lowLevelSynth.filter.frequency.linearRampToValueAtTime(
+      0,
+      when +
+        sequence.synth.envelope.attack +
+        sequence.synth.envelope.sustain +
+        sequence.synth.envelope.release
+    );
+    lowLevelSynth.amp.gain.linearRampToValueAtTime(
+      0,
+      when +
+        sequence.synth.envelope.attack +
+        sequence.synth.envelope.sustain +
+        sequence.synth.envelope.release
+    );
+  };
 };
 
 const getSequence = (
@@ -21,45 +69,13 @@ const getSequence = (
   const totalSequenceTime = secondsPerBar * bars;
   const sequenceLength = sequence.notes.length;
   const secondsPerNote = totalSequenceTime / sequenceLength;
-  const playNotes = sequence.notes.map((note) => {
-    return (when: number) => {
-      lowLevelSynth.oscillator.frequency.setValueAtTime(note, when);
-      lowLevelSynth.filter.frequency.setValueAtTime(0, when);
-      lowLevelSynth.amp.gain.setValueAtTime(0, when);
-      lowLevelSynth.filter.frequency.linearRampToValueAtTime(
-        sequence.synth.filter.frequency,
-        when + sequence.synth.envelope.attack
-      );
-      lowLevelSynth.amp.gain.linearRampToValueAtTime(
-        0.3,
-        when + sequence.synth.envelope.attack
-      );
-      lowLevelSynth.filter.frequency.setValueAtTime(
-        sequence.synth.filter.frequency,
-        when + sequence.synth.envelope.attack + sequence.synth.envelope.sustain
-      );
-      lowLevelSynth.amp.gain.setValueAtTime(
-        0.3,
-        when + sequence.synth.envelope.attack + sequence.synth.envelope.sustain
-      );
-      lowLevelSynth.filter.frequency.linearRampToValueAtTime(
-        0,
-        when +
-          sequence.synth.envelope.attack +
-          sequence.synth.envelope.sustain +
-          sequence.synth.envelope.release
-      );
-      lowLevelSynth.amp.gain.linearRampToValueAtTime(
-        0,
-        when +
-          sequence.synth.envelope.attack +
-          sequence.synth.envelope.sustain +
-          sequence.synth.envelope.release
-      );
-    };
+  const oscillatorSchedulers = sequence.notes.map((note) => {
+    return getOscillatorScheduler(note, lowLevelSynth, sequence);
   });
   const playSequence = () => {
-    playNotes.forEach((playFn, i) => playFn(audio.now() + i * secondsPerNote));
+    oscillatorSchedulers.forEach((scheduler, i) =>
+      scheduler(audio.now() + i * secondsPerNote)
+    );
   };
   return playSequence;
 };
@@ -79,10 +95,10 @@ export const Sequencer = (state: AudioState) => {
     sequence,
   }));
   const writeBuffer = () => {
-    const playFns = oscillators.map((osc) => {
+    const playSequences = oscillators.map((osc) => {
       return getSequence(osc, state, audio);
     });
-    playFns.forEach((fn) => fn());
+    playSequences.forEach((playSequence) => playSequence());
   };
   const start = () => {
     writeBuffer();
