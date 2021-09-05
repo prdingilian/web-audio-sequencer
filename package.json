@@ -1,10 +1,12 @@
 {
-  "name": "declarative-web-audio",
+  "name": "web-audio-sequencer",
   "version": "1.0.0",
   "description": "A declarative way to work with the Web Audio API",
-  "main": "index.js",
+  "main": "./lib/sequencer.js",
+  "types": "./lib/sequencer.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "author": "Peter Dingilian",
   "license": "MIT",
