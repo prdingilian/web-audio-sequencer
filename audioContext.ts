@@ -1,5 +1,6 @@
 import { Shape } from "./types";
 
+// Thin wrapper around the Audio Context
 const AudioCtx = (audioCtx: OfflineAudioContext) => ({
   now: () => audioCtx.currentTime,
   out: audioCtx.destination,

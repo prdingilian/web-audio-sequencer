@@ -53,12 +53,18 @@ seq.pause();
 seq.resume();
 ```
 
+You can update your sequence while it is playing. Your updates will reflect in the next loop. To update your sequence, just pass a new state (or a partial new state):
+
+```
+seq.update({bpm: 110})
+```
+
 That's it!
 
 ### Roadmap
 
 This library is a work in progress and not ready to be released on NPM yet. Remaining work includes:
 
-- Updating the sequencer state in place
+- ~~Updating the sequencer state in place~~
 - Assigning a relative gain to oscillators dependent upon the total number of sequences
 - Supporting note names in sequences, rather than just frequencies

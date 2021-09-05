@@ -15,7 +15,6 @@ type Synth = {
   shape: Shape;
   filter: Filter;
   envelope: Envelope;
-  id: number;
 };
 
 type Sequence = {

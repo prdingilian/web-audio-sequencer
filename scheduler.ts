@@ -1,22 +1,12 @@
-import { AudioCtx, Audio } from "./audio";
 import {
-  Synth,
   LowLevelSynth,
-  AudioState,
-  SequenceOscillator,
   Sequence,
+  SequenceOscillator,
+  AudioState,
 } from "./types";
+import { Audio } from "./audioContext";
 
-const createLowLevelSynth = (synth: Synth, audio: Audio): LowLevelSynth => {
-  const oscillator = audio.createOscillator(synth.shape);
-  const filter = audio.createFilter(synth.filter.q);
-  const amp = audio.createAmp();
-  oscillator.connect(filter).connect(amp).connect(audio.out);
-  oscillator.start();
-  return { oscillator, filter, amp };
-};
-
-const getOscillatorScheduler = (
+export const getOscillatorScheduler = (
   note: number,
   lowLevelSynth: LowLevelSynth,
   sequence: Sequence
@@ -58,11 +48,11 @@ const getOscillatorScheduler = (
   };
 };
 
-const getSequence = (
+export const getSequence = (
   sequenceOscillator: SequenceOscillator,
   state: AudioState,
   audio: Audio
-): (() => void) => {
+) => {
   const { bpm, bars } = state;
   const { sequence, lowLevelSynth } = sequenceOscillator;
   const secondsPerBar = bpm / 60;
@@ -78,43 +68,4 @@ const getSequence = (
     );
   };
   return playSequence;
-};
-
-const getOfflineAudioContext = (state: AudioState): OfflineAudioContext => {
-  const secondsPerBar = state.bpm / 60;
-  const totalSequenceTime = secondsPerBar * state.bars;
-  return new window.OfflineAudioContext(2, 44100 * totalSequenceTime, 44100);
-};
-
-export const Sequencer = (state: AudioState) => {
-  const playbackAudioContext = new window.AudioContext();
-  const audioContext = getOfflineAudioContext(state);
-  const audio = AudioCtx(audioContext);
-  const oscillators: SequenceOscillator[] = state.sequences.map((sequence) => ({
-    lowLevelSynth: createLowLevelSynth(sequence.synth, audio),
-    sequence,
-  }));
-  const writeBuffer = () => {
-    const playSequences = oscillators.map((osc) => {
-      return getSequence(osc, state, audio);
-    });
-    playSequences.forEach((playSequence) => playSequence());
-  };
-  const start = () => {
-    writeBuffer();
-    audioContext.startRendering().then((buffer) => {
-      const bufferSource = playbackAudioContext.createBufferSource();
-      bufferSource.buffer = buffer;
-      bufferSource.connect(playbackAudioContext.destination);
-      bufferSource.loop = state.loop;
-      bufferSource.start(playbackAudioContext.currentTime);
-    });
-  };
-  const pause = () => {
-    playbackAudioContext.suspend();
-  };
-  const resume = () => {
-    playbackAudioContext.resume();
-  };
-  return { start, pause, resume };
 };
