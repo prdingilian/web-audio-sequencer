@@ -11,9 +11,17 @@ Web Audio Sequencer is a library for writing music on the web in a declarative s
 
 ## Example Usage
 
+Install the package:
+
+```
+npm i web-audio-sequencer
+```
+
 Create an object that describes your music:
 
 ```
+import { Sequencer } from "web-audio-sequencer"
+...
 const state: AudioState = {
   bpm: 120,
   bars: 1,
