@@ -20,7 +20,7 @@ npm i web-audio-sequencer
 Create an object that describes your music:
 
 ```
-import { Sequencer } from "web-audio-sequencer"
+import { Sequencer, AudioState } from "web-audio-sequencer"
 ...
 const state: AudioState = {
   bpm: 120,
