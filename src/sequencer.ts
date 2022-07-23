@@ -33,7 +33,11 @@ const Sequencer = (state: AudioState) => {
     getNextBuffer(state).then(updateBuffer);
   };
 
-  return { start, pause, resume, update };
+  const close = () => {
+    playbackAudioContext.close()
+  }
+
+  return { start, pause, resume, update, close };
 };
 
 export { Sequencer, AudioState };
