@@ -6,7 +6,7 @@ import { SequenceOscillator, AudioState } from "./types";
 export const getOfflineAudioContext = (
   state: AudioState
 ): OfflineAudioContext => {
-  const secondsPerBar = state.bpm / 60;
+  const secondsPerBar = 60 / state.bpm;
   const totalSequenceTime = secondsPerBar * state.bars;
   return new window.OfflineAudioContext(2, 44100 * totalSequenceTime, 44100);
 };
