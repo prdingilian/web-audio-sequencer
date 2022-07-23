@@ -1,6 +1,6 @@
 {
   "name": "web-audio-sequencer",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A declarative way to work with the Web Audio API",
   "main": "./lib/sequencer.js",
   "types": "./lib/sequencer.d.ts",
