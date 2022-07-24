@@ -33,6 +33,7 @@ type AudioState = {
   bars: number;
   sequences: Sequence[];
   loop: boolean;
+  onLoop?: Function;
 };
 
 type SequenceOscillator = {

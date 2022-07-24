@@ -15,7 +15,10 @@ const Sequencer = (state: AudioState) => {
     bufferSource.connect(playbackAudioContext.destination);
     bufferSource.start(playbackAudioContext.currentTime);
     if (state.loop) {
-      bufferSource.onended = () => start();
+      bufferSource.onended = () => {
+        if (state.onLoop) state.onLoop()
+        start();
+      }
       getNextBuffer(state).then(updateBuffer);
     }
   };
